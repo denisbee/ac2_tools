@@ -4,27 +4,6 @@ from contextlib import contextmanager
 import json, time
 from typing import Dict, List, NamedTuple, Optional, Tuple, Union, AnyStr, Literal,TypedDict
 
-@contextmanager
-def ac2_api_session(api_server, username, password):
-    data = {
-        'username': username,
-        'password': password,
-        'eulaAccepted': True,
-        'verifyCsrfToken': True
-    }
-    requests.packages.urllib3.disable_warnings()
-    session =  requests.Session()
-    try:
-        responce = session.post(url = f'{api_server}/login', json = data, verify=False)
-        if responce.status_code != 200:
-            raise Exception(f'Error logging: {responce.content}')
-        yield session
-    finally:
-        session.post(url = f'{api_server}/logout', data = data, verify=False)
-        session.close()
-        print('closed')
-
-
 class AC2_API():
     session: requests.Session
     api_server: str
@@ -116,19 +95,3 @@ class AC2_API():
         responce = self.session.post(url = f'{self.api_server}/devices/{device_id}/metrics', json=abstract_metric_request, verify=False)
         return responce.status_code, json.loads(responce.content)   
  
-    
-
-# with AC2_API(**args) as api:
-#     # s, r = api.device_metrics(
-#         # abstract_metric_request={'from': time.time() * 1000 - 300000, 'to': time.time() * 1000, 'scale': 'seconds'},
-#         # mac = 'dc:9f:db:10:c9:fA')
-#     s, r = api.devices()
-
-# #     s, r = api.device_alerts(device_id = 447)
-#     print(s == 404)
-#     for d in r['results']:
-#         print(d['summary']['deviceNodeName'])
-#         # print(json.dumps(d, indent=2))
-
-    
-# [entry for entry in config.wireless[1].mac_acl]
